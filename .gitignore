@@ -1,37 +1,68 @@
-# OS files
+# =========================
+# Node / Next.js
+# =========================
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# =========================
+# Supabase
+# =========================
+.supabase/
+supabase/.env
+
+# =========================
+# IMDb Datasets (Huge)
+# =========================
+*.tsv
+*.tsv.gz
+data/
+datasets/
+
+# =========================
+# Testing / Coverage
+# =========================
+coverage/
+.vitest/
+.playwright/
+
+# =========================
+# OS / Editor
+# =========================
 .DS_Store
 Thumbs.db
 
-# Environment variables
-.env
-.env.*
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*.swp
-*.swo
-.cache/
-
-# IDE / editors
+# VS Code
 .vscode/
+!.vscode/extensions.json
+
+# IntelliJ / WebStorm
 .idea/
-*.iml
 
-# Build artifacts
-dist/
-build/
-out/
+# =========================
+# Vercel
+# =========================
+.vercel/
 
-# Dependencies
-node_modules/
-vendor/
-
-# Coverage
-coverage/
-
-# Local databases
-*.sqlite
-*.sqlite3
+# =========================
+# Misc
+# =========================
+*.log
+*.tmp
