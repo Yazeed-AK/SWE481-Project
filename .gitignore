@@ -1,0 +1,37 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+.cache/
+
+# IDE / editors
+.vscode/
+.idea/
+*.iml
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Dependencies
+node_modules/
+vendor/
+
+# Coverage
+coverage/
+
+# Local databases
+*.sqlite
+*.sqlite3
