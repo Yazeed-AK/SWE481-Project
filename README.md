@@ -112,32 +112,50 @@ npm install
 ```
 
 ### 3. Environment Variables
-Create .env.local:
-```env
-DATABASE_URL=
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-```
-Never commit this.
+1. Copy `.env.local.example` to `.env.local`.
+   ```bash
+   cp .env.local.example .env.local
+   ```
+2. **Supabase Setup:**
+   - Go to [Supabase](https://supabase.com/) and create a new project.
+   - Go to **Project Settings** -> **API**.
+   - Copy **Project URL** -> `SUPABASE_URL`
+   - Copy **anon** key -> `SUPABASE_ANON_KEY`
+   - Copy **service_role** key (Secret!) -> `SUPABASE_SERVICE_ROLE_KEY` (Required for ingestion script)
+
+   Your `.env.local` should look like this:
+   ```env
+   SUPABASE_URL="https://your-project-id.supabase.co"
+   SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR..."
+   SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR..."
+   ```
 
 ### 4. Database Setup
-
-Run SQL scripts in Supabase:
-- scripts/sql/schema.sql
-- scripts/sql/indexes.sql
-
+1. Go to the **SQL Editor** in your Supabase Dashboard.
+2. Open `scripts/sql/schema.sql`, copy the content, and run it in the SQL Editor.
+3. Open `scripts/sql/indexes.sql`, copy the content, and run it in the SQL Editor.
 
 ### 5. IMDb Data Ingestion
+This project includes scripts to download and filter IMDb data (>100 votes) to stay within free-tier limits.
 
-Download datasets from:
-
-https://developer.imdb.com/non-commercial-datasets/
-
-Run ingestion scripts locally:
+**Step 1: Download Datasets**
+downloads `title.basics.tsv.gz` and `title.ratings.tsv.gz` to the `data/` folder.
 ```bash
-npm run ingest:ratings
-npm run ingest:movies
+# Unix/Git Bash
+npm run ingest:download
+
+# OR manually download from https://datasets.imdbws.com/ into a 'data' folder at the root.
+```
+
+**Step 2: Run Ingestion**
+This script reads the local files in `data/`, filters for movies with >100 votes, and uploads to Supabase.
+*Note: This process may take a few minutes.*
+```bash
+# Install ts-node if not already installed
+npm install -g ts-node typescript
+
+# Run the ingestion script
+npx ts-node scripts/ingest/import_imdb.ts
 ```
 
 ### 6. Run Development Server

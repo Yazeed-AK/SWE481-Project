@@ -1,11 +1,12 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseKey = process.env.SUPABASE_ANON_KEY || 'placeholder';
 
-if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables');
+// Provide a warning but don't crash during build
+if (!process.env.SUPABASE_URL) {
+    console.warn('Missing Supabase environment variables, using placeholders.');
 }
 
 export const db = createClient(supabaseUrl, supabaseKey);
