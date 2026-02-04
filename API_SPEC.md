@@ -23,11 +23,14 @@ Returns a paginated list of movies.
 ```json
 [
   {
-    "tconst": "tt0111161",
-    "primaryTitle": "The Shawshank Redemption",
-    "startYear": 1994,
-    "averageRating": 9.3,
-    "genres": ["Drama"]
+    "id": "tt0111161",
+    "title": "The Shawshank Redemption",
+    "year": 1994,
+    "director": "Frank Darabont",
+    "ratings": {
+        "rating": 9.3,
+        "numVotes": 2343110
+    }
   },
   ...
 ]
@@ -59,48 +62,59 @@ Returns detailed information for a specific movie.
 **Response (200 OK):**
 ```json
 {
-  "tconst": "tt0111161",
-  "titleType": "movie",
-  "primaryTitle": "The Shawshank Redemption",
-  "originalTitle": "The Shawshank Redemption",
-  "isAdult": false,
-  "startYear": 1994,
-  "endYear": null,
-  "runtimeMinutes": 142,
-  "genres": ["Drama"],
-  "averageRating": 9.3,
-  "numVotes": 2343110
+  "id": "tt0111161",
+  "title": "The Shawshank Redemption",
+  "year": 1994,
+  "director": "Frank Darabont",
+  "ratings": {
+      "rating": 9.3,
+      "numVotes": 2343110
+  },
+  "stars_in_movies": [
+      {
+          "starId": "nm0000151",
+          "stars": { "name": "Morgan Freeman" }
+      }
+  ],
+  "genres_in_movies": [
+      {
+          "genreId": 1,
+          "genres": { "name": "Drama" }
+      }
+  ]
 }
 ```
 
-**Response (404 Not Found):**
-```json
-{ "error": "Movie not found" }
-```
+## Database Schema (CS122B Spec)
 
-## Database Schema
-
-### `movies` Table
+### `movies`
 | Column | Type | Description |
 |--------|------|-------------|
-| `tconst` | TEXT (PK) | Unique IMDb ID |
-| `titleType` | TEXT | Type of content (e.g., 'movie') |
-| `primaryTitle` | TEXT | English title |
-| `originalTitle` | TEXT | Original title |
-| `isAdult` | BOOLEAN | Adult content flag |
-| `startYear` | INTEGER | Release year |
-| `endYear` | INTEGER | End year (for series) |
-| `runtimeMinutes` | INTEGER | Duration |
-| `genres` | TEXT[] | Array of genres |
+| `id` | VARCHAR(10) | Primary Key (tconst) |
+| `title` | VARCHAR(100) | |
+| `year` | INTEGER | |
+| `director` | VARCHAR(100) | |
 
-### `ratings` Table
+### `stars`
 | Column | Type | Description |
 |--------|------|-------------|
-| `tconst` | TEXT (FK) | References `movies.tconst` |
-| `averageRating` | DECIMAL | Average user rating |
-| `numVotes` | INTEGER | Number of votes |
+| `id` | VARCHAR(10) | Primary Key (nconst) |
+| `name` | VARCHAR(100) | |
+| `birthYear` | INTEGER | |
 
-## Frontend-Backend Contract
-- Frontend consumes these exact endpoints.
-- Dates are ISO 8601 strings if applicable.
-- Errors follow `{ "error": "message" }` format.
+### `genres`
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | INTEGER | Primary Key (Auto-inc) |
+| `name` | VARCHAR(32) | |
+
+### `customers`
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | INTEGER | PK |
+| `firstName` | VARCHAR(50) | |
+| `lastName` | VARCHAR(50) | |
+| `email` | VARCHAR(50) | |
+| `password` | VARCHAR(20) | |
+
+*See `scripts/sql/schema.sql` for full definitions including `sales` and relationships.*

@@ -135,11 +135,9 @@ npm install
 2. Open `scripts/sql/schema.sql`, copy the content, and run it in the SQL Editor.
 3. Open `scripts/sql/indexes.sql`, copy the content, and run it in the SQL Editor.
 
-### 5. IMDb Data Ingestion
-This project includes scripts to download and filter IMDb data (>100 votes) to stay within free-tier limits.
-
+### 5. IMDb Data Ingestion (CS122B Schema)
 **Step 1: Download Datasets**
-downloads `title.basics.tsv.gz` and `title.ratings.tsv.gz` to the `data/` folder.
+Downloads `title.basics`, `title.ratings`, `title.crew`, `title.principals`, and `name.basics` to `data/`.
 ```bash
 # Unix/Git Bash
 npm run ingest:download
@@ -148,14 +146,13 @@ npm run ingest:download
 ```
 
 **Step 2: Run Ingestion**
-This script reads the local files in `data/`, filters for movies with >100 votes, and uploads to Supabase.
-*Note: This process may take a few minutes.*
+This script performs a multi-stage process:
+1.  Filters movies (>100 votes).
+2.  Resolves Director & Star names from linked datasets.
+3.  Normalizes data into `stars`, `genres`, `movies` tables.
+4.  Uploads to Supabase.
 ```bash
-# Install ts-node if not already installed
-npm install -g ts-node typescript
-
-# Run the ingestion script
-npx ts-node scripts/ingest/import_imdb.ts
+npm run ingest:imdb
 ```
 
 ### 6. Run Development Server
