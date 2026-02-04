@@ -104,7 +104,6 @@ Indexes are added after import for performance.
 ### 1. Clone Repository
 ```bash
 git clone https://github.com/Yazeed-AK/SWE481-Project.git
-cd imdb-movie-app
 ```
 
 ### 2. Install Dependencies
