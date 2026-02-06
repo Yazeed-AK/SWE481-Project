@@ -5,6 +5,44 @@ import * as readline from 'readline';
 import * as path from 'path';
 import * as zlib from 'zlib';
 
+// --- INTERFACES ---
+interface MovieData {
+    id: string;
+    title: string;
+    year: number;
+    directorNconst: string | null;
+    genres: string[];
+}
+
+interface Star {
+    id: string;
+    name: string;
+    birthYear: number | null;
+}
+
+interface MovieInsert {
+    id: string;
+    title: string;
+    year: number;
+    director: string;
+}
+
+interface StarRelation {
+    movieId: string;
+    starId: string;
+}
+
+interface GenreRelation {
+    movieId: string;
+    genreId: number;
+}
+
+interface RatingInsert {
+    movieId: string;
+    rating: number;
+    numVotes: number;
+}
+
 // --- CONFIGURATION ---
 const BATCH_SIZE = 1000;
 const MIN_VOTES = 100;
@@ -28,12 +66,12 @@ const db = createClient(supabaseUrl, supabaseKey, {
 
 // --- STATE ---
 const validTconsts = new Set<string>(); // Movies with enough votes
-const moviesStore = new Map<string, any>(); // tconst -> { title, year, directorNconst, genreNames[] }
+const moviesStore = new Map<string, MovieData>(); // tconst -> { title, year, directorNconst, genreNames[] }
 const neededNconsts = new Set<string>(); // People we need names for
 const nameMap = new Map<string, string>(); // nconst -> name
 const starRelations: { movieId: string; starId: string }[] = [];
 // genre map: name -> id (we will generate numeric IDs)
-let genreMap = new Map<string, number>();
+const genreMap = new Map<string, number>();
 
 // --- HELPERS ---
 function getStream(filename: string) {
@@ -53,7 +91,7 @@ async function run() {
         let count = 0;
         for await (const line of rlRatings) {
             if (count++ === 0) continue;
-            const [tconst, avgRating, numVotes] = line.split('\t');
+            const [tconst, , numVotes] = line.split('\t');
             if (parseInt(numVotes) >= MIN_VOTES) {
                 validTconsts.add(tconst);
             }
@@ -101,7 +139,7 @@ async function run() {
             if (moviesStore.has(tconst) && directors !== '\\N') {
                 // Take first director
                 const directorId = directors.split(',')[0];
-                moviesStore.get(tconst).directorNconst = directorId;
+                moviesStore.get(tconst)!.directorNconst = directorId;
                 neededNconsts.add(directorId);
             }
         }
@@ -145,7 +183,7 @@ async function run() {
         // A. Insert STARS
         console.log(`Inserting ${neededNconsts.size} Stars...`);
         const rlNames2 = getStream('name.basics.tsv.gz');
-        let starsBatch: any[] = [];
+        let starsBatch: Star[] = [];
         count = 0;
         let insertedStars = 0;
         const foundStars = new Set<string>(); // TRACK FOUND STARS
@@ -200,7 +238,7 @@ async function run() {
 
         // C. Insert MOVIES
         console.log('Inserting Movies...');
-        let moviesBatch: any[] = [];
+        let moviesBatch: MovieInsert[] = [];
         let insertedMovies = 0;
 
         for (const m of moviesStore.values()) {
@@ -226,7 +264,7 @@ async function run() {
 
         // D. Insert STARS_IN_MOVIES (Filtered)
         console.log('Inserting Stars_In_Movies...');
-        let simBatch: any[] = [];
+        let simBatch: StarRelation[] = [];
         let insertedSim = 0;
         let skippedSim = 0;
 
@@ -249,7 +287,7 @@ async function run() {
 
         // E. Insert GENRES_IN_MOVIES
         console.log('\nInserting Genres_In_Movies...');
-        let gimBatch: any[] = [];
+        let gimBatch: GenreRelation[] = [];
         for (const m of moviesStore.values()) {
             for (const gName of m.genres) {
                 const gId = genreMap.get(gName);
@@ -267,7 +305,7 @@ async function run() {
         // F. Insert RATINGS
         console.log('\nInserting Ratings...');
         const rlRatingsFinal = getStream('title.ratings.tsv.gz');
-        let ratingsBatch: any[] = [];
+        let ratingsBatch: RatingInsert[] = [];
         count = 0;
         for await (const line of rlRatingsFinal) {
             if (count++ === 0) continue;

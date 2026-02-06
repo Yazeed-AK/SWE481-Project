@@ -15,7 +15,7 @@ export async function GET(request: Request) {
             movies = await queries.getMovies(page);
         }
         return NextResponse.json(movies);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch movies' }, { status: 500 });
     }
 }

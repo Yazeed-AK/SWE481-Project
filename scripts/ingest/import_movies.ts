@@ -1,7 +1,5 @@
 
-import { db } from '../../lib/db';
-import * as fs from 'fs';
-import * as readline from 'readline';
+
 
 async function importMovies() {
     console.log('Starting movie import...');

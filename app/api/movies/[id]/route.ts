@@ -14,7 +14,7 @@ export async function GET(
             return NextResponse.json({ error: 'Movie not found' }, { status: 404 });
         }
         return NextResponse.json(movie);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch movie' }, { status: 500 });
     }
 }

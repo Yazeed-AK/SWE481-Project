@@ -1,5 +1,5 @@
 
-import { db } from '../../lib/db';
+
 
 async function importRatings() {
     console.log('Starting ratings import...');
