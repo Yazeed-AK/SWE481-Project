@@ -104,7 +104,6 @@ Indexes are added after import for performance.
 ### 1. Clone Repository
 ```bash
 git clone https://github.com/Yazeed-AK/SWE481-Project.git
-cd imdb-movie-app
 ```
 
 ### 2. Install Dependencies
@@ -113,32 +112,47 @@ npm install
 ```
 
 ### 3. Environment Variables
-Create .env.local:
-```env
-DATABASE_URL=
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-```
-Never commit this.
+1. Copy `.env.local.example` to `.env.local`.
+   ```bash
+   cp .env.local.example .env.local
+   ```
+2. **Supabase Setup:**
+   - Go to [Supabase](https://supabase.com/) and create a new project.
+   - Go to **Project Settings** -> **API**.
+   - Copy **Project URL** -> `SUPABASE_URL`
+   - Copy **anon** key -> `SUPABASE_ANON_KEY`
+   - Copy **service_role** key (Secret!) -> `SUPABASE_SERVICE_ROLE_KEY` (Required for ingestion script)
+
+   Your `.env.local` should look like this:
+   ```env
+   SUPABASE_URL="https://your-project-id.supabase.co"
+   SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR..."
+   SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR..."
+   ```
 
 ### 4. Database Setup
+1. Go to the **SQL Editor** in your Supabase Dashboard.
+2. Open `scripts/sql/schema.sql`, copy the content, and run it in the SQL Editor.
+3. Open `scripts/sql/indexes.sql`, copy the content, and run it in the SQL Editor.
 
-Run SQL scripts in Supabase:
-- scripts/sql/schema.sql
-- scripts/sql/indexes.sql
-
-
-### 5. IMDb Data Ingestion
-
-Download datasets from:
-
-https://developer.imdb.com/non-commercial-datasets/
-
-Run ingestion scripts locally:
+### 5. IMDb Data Ingestion (CS122B Schema)
+**Step 1: Download Datasets**
+Downloads `title.basics`, `title.ratings`, `title.crew`, `title.principals`, and `name.basics` to `data/`.
 ```bash
-npm run ingest:ratings
-npm run ingest:movies
+# Unix/Git Bash
+npm run ingest:download
+
+# OR manually download from https://datasets.imdbws.com/ into a 'data' folder at the root.
+```
+
+**Step 2: Run Ingestion**
+This script performs a multi-stage process:
+1.  Filters movies (>100 votes).
+2.  Resolves Director & Star names from linked datasets.
+3.  Normalizes data into `stars`, `genres`, `movies` tables.
+4.  Uploads to Supabase.
+```bash
+npm run ingest:imdb
 ```
 
 ### 6. Run Development Server
