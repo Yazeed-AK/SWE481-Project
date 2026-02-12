@@ -87,7 +87,7 @@ describe('Movies API - Stress & Robustness Tests', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(queriesMock.getMovies).toHaveBeenCalledWith(1);
+    expect(queriesMock.getMovies).toHaveBeenCalledWith(1, 10);
   });
 
   /**
@@ -106,7 +106,7 @@ describe('Movies API - Stress & Robustness Tests', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(queriesMock.getMovies).toHaveBeenCalledWith(1);
+    expect(queriesMock.getMovies).toHaveBeenCalledWith(1, 10);
   });
 
   /**
