@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as readline from 'readline';
 import * as path from 'path';
 import * as zlib from 'zlib';
+import { Movie, Star, Rating } from '../../lib/types';
 
 // --- INTERFACES ---
 interface MovieData {
@@ -14,18 +15,10 @@ interface MovieData {
     genres: string[];
 }
 
-interface Star {
-    id: string;
-    name: string;
-    birthYear: number | null;
-}
+// Star imported from lib/types
 
-interface MovieInsert {
-    id: string;
-    title: string;
-    year: number;
-    director: string;
-}
+// MovieInsert is identical to Movie
+// RatingInsert is identical to Rating
 
 interface StarRelation {
     movieId: string;
@@ -35,12 +28,6 @@ interface StarRelation {
 interface GenreRelation {
     movieId: string;
     genreId: number;
-}
-
-interface RatingInsert {
-    movieId: string;
-    rating: number;
-    numVotes: number;
 }
 
 // --- CONFIGURATION ---
@@ -238,7 +225,7 @@ async function run() {
 
         // C. Insert MOVIES
         console.log('Inserting Movies...');
-        let moviesBatch: MovieInsert[] = [];
+        let moviesBatch: Movie[] = [];
         let insertedMovies = 0;
 
         for (const m of moviesStore.values()) {
@@ -305,7 +292,7 @@ async function run() {
         // F. Insert RATINGS
         console.log('\nInserting Ratings...');
         const rlRatingsFinal = getStream('title.ratings.tsv.gz');
-        let ratingsBatch: RatingInsert[] = [];
+        let ratingsBatch: Rating[] = [];
         count = 0;
         for await (const line of rlRatingsFinal) {
             if (count++ === 0) continue;

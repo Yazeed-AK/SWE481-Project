@@ -2,6 +2,12 @@
 import { NextResponse } from 'next/server';
 import { queries } from '@/lib/queries';
 
+/**
+ * GET /api/movies
+ * Retrieves a list of movies, optionally filtered by a search query.
+ * @param request - The incoming HTTP request.
+ * @returns A JSON response containing the list of movies or an error message.
+ */
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('search');
