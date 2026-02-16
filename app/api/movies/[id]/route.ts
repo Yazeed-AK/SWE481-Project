@@ -2,6 +2,13 @@
 import { NextResponse } from 'next/server';
 import { queries } from '@/lib/queries';
 
+/**
+ * GET /api/movies/[id]
+ * Retrieves detailed information for a specific movie.
+ * @param request - The incoming HTTP request.
+ * @param params - The route parameters containing the movie ID.
+ * @returns A JSON response containing the movie details or an error message.
+ */
 export async function GET(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
