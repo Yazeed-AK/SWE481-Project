@@ -20,12 +20,17 @@ All API endpoints are prefixed with `/api`.
 **GET** `/api/movies`  
 Retrieves a list of the top-rated movies ordered by rating.
 
-### Query Parameters
+**Query Parameters**
 
 | Parameter | Type | Required | Description |
-|------------|--------|------------|----------------|
-| `page` | number | No | Page number for pagination (default: 1) |
+| :--- | :--- | :--- | :--- |
+| `page` | number | No | Page number (default: 1) |
 | `limit` | number | No | Items per page (default: 10) |
+| `title` | string | No | Search by title (partial match) |
+| `genre` | string | No | Filter by genre (e.g., "Action", "Comedy") |
+| `year` | number | No | Filter by release year |
+| `director` | string | No | Filter by director name |
+| `sort` | string | No | Sort by `rating` or `title` (asc/desc) |
 
 ### Response — 200 OK
 
@@ -43,7 +48,23 @@ Retrieves a list of the top-rated movies ordered by rating.
   ]
 }
 ```
+**Get Star Details**
 
+`GET /api/stars/[id]`
+Returns detailed information about a specific star and the movies they acted in.
+
+**Response Example**
+
+```json
+{
+  "id": "nm0000151",
+  "name": "Morgan Freeman",
+  "birthYear": 1937,
+  "movies": [
+    { "id": "tt0111161", "title": "The Shawshank Redemption" },
+    { "id": "tt0099747", "title": "Driving Miss Daisy" }
+  ]
+}
 ---
 
 ## Search Movies (Planned)
@@ -131,8 +152,79 @@ Creates a new customer account.
 | lastName | string | Yes | Customer last name |
 
 ---
+## 3. Shopping & Checkout API (Planned)
 
-# 3. Core Interactions (Planned)
+This section defines the API endpoints for managing the shopping cart and completing checkout for movie purchases.
+
+---
+
+### Add Item to Cart
+
+**POST** `/api/cart`  
+Adds a movie to the user's session cart.
+
+#### Request Payload
+```json
+{
+  "movieId": "tt0111161",
+  "quantity": 1
+}
+```
+
+#### Response — 200 OK
+```json
+{
+  "success": true,
+  "message": "Item added to cart"
+}
+```
+
+---
+
+### Get Cart Items
+
+**GET** `/api/cart`  
+Retrieves the current list of movies in the shopping cart.
+
+#### Response — 200 OK
+```json
+[
+  {
+    "movieId": "tt0111161",
+    "title": "The Shawshank Redemption",
+    "price": 9.99,
+    "quantity": 2,
+    "total": 19.98
+  }
+]
+```
+
+---
+
+### Place Order (Checkout)
+
+**POST** `/api/checkout`  
+Processes the transaction for all items currently in the cart.
+
+#### Request Payload
+```json
+{
+  "firstName": "Yasser",
+  "lastName": "User",
+  "cardNumber": "1234567890123456",
+  "expiration": "2026-12-31"
+}
+```
+
+#### Response — 200 OK
+```json
+{
+  "success": true,
+  "message": "Order placed successfully",
+  "transactionIds": [101, 102]
+}
+```
+# 4. Core Interactions (Planned)
 
 ## Rate a Movie
 
@@ -162,7 +254,7 @@ Header: `Authorization: Bearer <token>`
 
 ---
 
-# 4. Database Schema Design
+# 5. Database Schema Design
 
 The database follows the relational schema provided in CS122B specifications.
 
