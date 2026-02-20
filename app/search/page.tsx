@@ -65,7 +65,7 @@ export default function SearchPage() {
       {/* No results found message */}
       {!loading && hasSearched && movies.length === 0 && (
         <p className="text-center text-red-500 text-lg mt-8 bg-red-50 py-4 rounded-lg">
-          No movies found matching: "{query}"
+          No movies found matching: &quot;{query}&quot;
         </p>
       )}
 
