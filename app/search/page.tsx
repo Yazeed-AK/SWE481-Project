@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 
+// Detailed properties from 'main'
 interface Movie {
   id: string;
   title: string;
@@ -13,38 +14,62 @@ interface Movie {
   };
 }
 
+// Re-using payload normalization from the previous resolution for consistency
+type MoviesResponse = Movie[] | { data?: Movie[] };
+
+function normalizeMovies(payload: MoviesResponse): Movie[] {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+  if (payload && Array.isArray(payload.data)) {
+    return payload.data;
+  }
+  return [];
+}
+
 export default function SearchPage() {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault(); 
+  // Strongly typed event from 'feature/phase3-testing', logic from 'main'
+  async function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); 
     if (!query.trim()) return; 
+
     setLoading(true);
     setHasSearched(true);
+    setHasError(false);
 
     try {
-      // Note: Make sure to use ?search= or ?title= depending on your API route configuration
       const res = await fetch(`/api/movies?search=${encodeURIComponent(query)}`);
-      const json = await res.json();
       
-      setMovies(json.data || []);
+      if (!res.ok) {
+        throw new Error('Failed to fetch search results');
+      }
+
+      const payload = (await res.json()) as MoviesResponse;
+      setMovies(normalizeMovies(payload));
     } catch (error) {
       console.error("Error searching movies:", error);
+      setHasError(true);
       setMovies([]);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold mb-8 text-center">Search IMDb Movies</h1>
 
-      <form onSubmit={handleSearch} className="flex gap-4 justify-center mb-12">
+      <form onSubmit={handleSearch} className="flex gap-4 justify-center mb-12 items-center">
+        {/* Accessible label from 'feature/phase3-testing', hidden visually to preserve 'main' design */}
+        <label htmlFor="movie-search" className="sr-only">Search</label>
         <input
+          id="movie-search"
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -62,15 +87,22 @@ export default function SearchPage() {
       {/* Loading message */}
       {loading && <p className="text-center text-lg font-medium text-gray-500">Searching database...</p>}
 
+      {/* Error message */}
+      {!loading && hasError && (
+        <p className="text-center text-red-500 text-lg mt-8 bg-red-50 py-4 rounded-lg">
+          Failed to fetch search results. Please try again.
+        </p>
+      )}
+
       {/* No results found message */}
-      {!loading && hasSearched && movies.length === 0 && (
+      {!loading && !hasError && hasSearched && movies.length === 0 && (
         <p className="text-center text-red-500 text-lg mt-8 bg-red-50 py-4 rounded-lg">
           No movies found matching: &quot;{query}&quot;
         </p>
       )}
 
       {/* Search results grid */}
-      {!loading && movies.length > 0 && (
+      {!loading && !hasError && movies.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {movies.map((movie) => (
             <div key={movie.id} className="border p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 bg-white text-black">
