@@ -32,7 +32,7 @@ describe('Movies page', () => {
 
     render(<MoviesPage />);
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/loading/i)[0]).toBeInTheDocument();
     expect(await screen.findByText('Batman Begins')).toBeInTheDocument();
   });
 
