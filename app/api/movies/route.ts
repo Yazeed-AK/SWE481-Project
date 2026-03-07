@@ -4,20 +4,20 @@ import { supabase } from '@/lib/supabase';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
     // Pagination parameters
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '20', 10);
     const offset = (page - 1) * limit;
-    
+
     // Filtering parameters
     const title = searchParams.get('title');
     const year = searchParams.get('year');
     const director = searchParams.get('director');
     const genre = searchParams.get('genre');
-    
+
     // Sorting (default to rating descending)
-    const sortBy = searchParams.get('sort') || 'rating'; 
+    const sortBy = searchParams.get('sort') || 'rating';
 
     let query = supabase
       .from('movies')
@@ -62,8 +62,8 @@ export async function GET(request: Request) {
       ...movie,
       rating: (movie.ratings as unknown as { rating: number; numVotes: number })?.rating || null,
       numVotes: (movie.ratings as unknown as { rating: number; numVotes: number })?.numVotes || 0,
-      stars: movie.stars_in_movies?.map((sim: { stars?: { name?: string } }) => sim.stars?.name) || [],
-      genres: movie.genres_in_movies?.map((gim: { genres?: { name?: string } }) => gim.genres?.name) || [],
+      stars: movie.stars_in_movies?.map((sim: any) => Array.isArray(sim.stars) ? sim.stars[0]?.name : sim.stars?.name) || [],
+      genres: movie.genres_in_movies?.map((gim: any) => Array.isArray(gim.genres) ? gim.genres[0]?.name : gim.genres?.name) || [],
     }));
 
     return NextResponse.json({
