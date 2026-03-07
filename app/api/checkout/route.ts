@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
-    const { email, firstName, lastName, ccId, cart } = await request.json();
+    const { email, ccId, cart } = await request.json();
 
     if (!email || !ccId || !cart || cart.length === 0) {
       return NextResponse.json({ error: 'Missing required checkout information or empty cart' }, { status: 400 });
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 
     // 2. Process Sales
     // We insert a row into 'sales' for every movie in the cart
-    const salesInserts = cart.map((movie: any) => ({
+    const salesInserts = cart.map((movie: { id: string }) => ({
       customerId: realCustomerId,
       movieId: movie.id,
       saleDate: new Date().toISOString().split('T')[0] // current date YYYY-MM-DD
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
         sales: salesData 
     });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) || 'Internal Server Error' }, { status: 500 });
   }
 }

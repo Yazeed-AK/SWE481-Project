@@ -1,21 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import { useCart } from '@/components/CartProvider';
 
 export default function CheckoutPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   
-  const { cart, clearCart, total } = useCart();
+  const { cart, clearCart } = useCart();
   const [hydrated, setHydrated] = useState(false);
   
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -77,8 +75,8 @@ export default function CheckoutPage() {
       // Clear cart globally
       clearCart();
 
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : (typeof err === "object" && err !== null && "message" in err ? String((err as Record<string, unknown>).message) : String(err))));
     } finally {
       setLoading(false);
     }

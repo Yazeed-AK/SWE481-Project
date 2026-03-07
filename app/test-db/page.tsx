@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
 export default function TestDbPage() {
-  const [data, setData] = useState<any[] | null>(null);
-  const [error, setError] = useState<any>(null);
+  const [data, setData] = useState<unknown[] | null>(null);
+  const [error, setError] = useState<Error | { message?: string; code?: string; details?: string; hint?: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function TestDbPage() {
             <div className="alert alert-danger shadow-sm border-0">
               <h4 className="alert-heading fw-bold">Connection Error</h4>
               <hr />
-              <p className="mb-2"><strong>Message:</strong> {error.message || 'Unknown error occurred'}</p>
+              <p className="mb-2"><strong>Message:</strong> {(error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) || 'Unknown error occurred'}</p>
               <p className="mb-2"><strong>Code:</strong> <code>{error.code || 'N/A'}</code></p>
               <p className="mb-0"><strong>Details:</strong> {error.details || 'N/A'}</p>
               {error.hint && <p className="mb-0 mt-2 text-muted"><strong>Hint:</strong> {error.hint}</p>}

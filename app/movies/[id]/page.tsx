@@ -40,7 +40,7 @@ export default function SingleMoviePage() {
   const [addedWatchlist, setAddedWatchlist] = useState(false);
 
   const { user } = useAuth();
-  const getWatchlistKey = () => user ? `imdb_watchlist_${user.id}` : 'imdb_watchlist_guest';
+  const getWatchlistKey = React.useCallback(() => user ? `imdb_watchlist_${user.id}` : 'imdb_watchlist_guest', [user]);
 
   useEffect(() => {
     if (!movieId) return;
@@ -53,8 +53,8 @@ export default function SingleMoviePage() {
         }
         const json = await res.json();
         setMovie(json.data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load movie');
+      } catch (err: unknown) {
+        setError((err instanceof Error ? err.message : (typeof err === "object" && err !== null && "message" in err ? String((err as Record<string, unknown>).message) : String(err))) || 'Failed to load movie');
       } finally {
         setLoading(false);
       }
@@ -64,14 +64,14 @@ export default function SingleMoviePage() {
     
     // Check if in watchlist already
     const wl = JSON.parse(localStorage.getItem(getWatchlistKey()) || '[]');
-    if (wl.some((m: any) => m.id === movieId)) {
+    if (wl.some((m: { id: string }) => m.id === movieId)) {
       setAddedWatchlist(true);
     }
 
     if (cart.find(item => item.id === movieId)) {
       setAddedCart(true);
     }
-  }, [movieId, cart, user]);
+  }, [movieId, cart, getWatchlistKey]);
 
   const handleAddToCart = () => {
     if (!movie) return;
@@ -94,7 +94,7 @@ export default function SingleMoviePage() {
       const wlKey = getWatchlistKey();
       const wl = JSON.parse(localStorage.getItem(wlKey) || '[]');
       if (addedWatchlist) {
-        const filtered = wl.filter((m: any) => m.id !== movie.id);
+        const filtered = wl.filter((m: { id: string }) => m.id !== movie.id);
         localStorage.setItem(wlKey, JSON.stringify(filtered));
         setAddedWatchlist(false);
       } else {

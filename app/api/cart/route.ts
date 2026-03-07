@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server';
 // Note: To make this stateless across the browser, normally you'd use a server-side cookie 
 // or LocalStorage on the client. Here we mock an endpoint that could interface with Redis/DB.
 
-let memoryCart: any[] = []; // Only for demo purposes in a single thread
+let memoryCart: Record<string, unknown>[] = []; // Only for demo purposes in a single thread
 
 export async function GET() {
   return NextResponse.json({ cart: memoryCart });
@@ -25,8 +25,8 @@ export async function POST(request: Request) {
     
     return NextResponse.json({ cart: memoryCart });
     
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) }, { status: 500 });
   }
 }
 
@@ -35,7 +35,7 @@ export async function DELETE(request: Request) {
         const { movieId } = await request.json();
         memoryCart = memoryCart.filter(m => m.id !== movieId);
         return NextResponse.json({ cart: memoryCart });
-    } catch(error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch(error: unknown) {
+        return NextResponse.json({ error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) }, { status: 500 });
     }
 }

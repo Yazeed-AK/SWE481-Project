@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     }
 
     // 2. Insert explicit credit card
-    const { data: ccData, error: ccError } = await supabase
+    const { error: ccError } = await supabase
       .from('creditcards')
       .upsert([{ 
         id: ccId,
@@ -94,9 +94,9 @@ export async function POST(request: Request) {
       customer: customerData ? customerData[0] : null 
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || 'Internal Server Error' }, 
+      { error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) || 'Internal Server Error' }, 
       { status: 500 }
     );
   }

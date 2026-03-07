@@ -35,8 +35,8 @@ export default function SingleStarPage() {
         }
         const json = await res.json();
         setStar(json.data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load star');
+      } catch (err: unknown) {
+        setError((err instanceof Error ? err.message : (typeof err === "object" && err !== null && "message" in err ? String((err as Record<string, unknown>).message) : String(err))) || 'Failed to load star');
       } finally {
         setLoading(false);
       }

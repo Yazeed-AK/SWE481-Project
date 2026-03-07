@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 
@@ -13,7 +13,7 @@ interface WatchlistMovie {
 
 export default function WatchlistPage() {
   const { user } = useAuth();
-  const getWatchlistKey = () => user ? `imdb_watchlist_${user.id}` : 'imdb_watchlist_guest';
+  const getWatchlistKey = useCallback(() => user ? `imdb_watchlist_${user.id}` : "imdb_watchlist_guest", [user]);
 
   const [watchlist, setWatchlist] = useState<WatchlistMovie[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,9 +22,12 @@ export default function WatchlistPage() {
     // Load from local storage dynamically
     const wlKey = getWatchlistKey();
     const wl = JSON.parse(localStorage.getItem(wlKey) || '[]');
+    
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setWatchlist(wl);
+    
     setLoading(false);
-  }, [user]);
+  }, [getWatchlistKey]);
 
   const handleRemove = (id: string) => {
     const updated = watchlist.filter(m => m.id !== id);

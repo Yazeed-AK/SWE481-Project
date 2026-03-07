@@ -26,7 +26,7 @@ export async function GET(
       if (error.code === 'PGRST116') {
         return NextResponse.json({ error: 'Movie not found' }, { status: 404 });
       }
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) }, { status: 500 });
     }
 
     if (!data) {
@@ -35,14 +35,14 @@ export async function GET(
 
     const formattedData = {
       ...data,
-      rating: (data.ratings as any) || { rating: null, numVotes: 0 },
-      stars: data.stars_in_movies?.map((sim: any) => sim.stars) || [],
-      genres: data.genres_in_movies?.map((gim: any) => gim.genres) || [],
+      rating: (data.ratings as unknown as { rating: number; numVotes: number }) || { rating: null, numVotes: 0 },
+      stars: data.stars_in_movies?.map((sim: { stars?: unknown }) => sim.stars) || [],
+      genres: data.genres_in_movies?.map((gim: { genres?: unknown }) => gim.genres) || [],
     };
 
     return NextResponse.json({ data: formattedData });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) || 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -54,16 +54,16 @@ export async function GET(request: Request) {
     const { data, error, count } = await query;
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) }, { status: 500 });
     }
 
     // Format Data for frontend consumption
     const formattedData = data?.map(movie => ({
       ...movie,
-      rating: (movie.ratings as any)?.rating || null,
-      numVotes: (movie.ratings as any)?.numVotes || 0,
-      stars: movie.stars_in_movies?.map((sim: any) => sim.stars?.name) || [],
-      genres: movie.genres_in_movies?.map((gim: any) => gim.genres?.name) || [],
+      rating: (movie.ratings as unknown as { rating: number; numVotes: number })?.rating || null,
+      numVotes: (movie.ratings as unknown as { rating: number; numVotes: number })?.numVotes || 0,
+      stars: movie.stars_in_movies?.map((sim: { stars?: { name?: string } }) => sim.stars?.name) || [],
+      genres: movie.genres_in_movies?.map((gim: { genres?: { name?: string } }) => gim.genres?.name) || [],
     }));
 
     return NextResponse.json({
@@ -76,7 +76,7 @@ export async function GET(request: Request) {
       }
     });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) || 'Internal Server Error' }, { status: 500 });
   }
 }

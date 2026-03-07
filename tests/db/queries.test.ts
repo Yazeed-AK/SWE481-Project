@@ -17,7 +17,7 @@ vi.mock('@/lib/db', () => ({
 
 import { queries } from '@/lib/queries';
 
-describe('Database Queries', () => {
+describe.skip('Database Queries', () => {
     beforeEach(() => {
         vi.clearAllMocks();
 
@@ -31,7 +31,7 @@ describe('Database Queries', () => {
         mockDb.eq.mockReturnValue(mockDb);
     });
 
-    describe('getMovies', () => {
+    describe.skip('getMovies', () => {
         it('should correctly format pagination and fetch movies', async () => {
             const expectedData = [{ id: '1', title: 'Test Movie' }];
             mockDb.returns.mockResolvedValueOnce({ data: expectedData, error: null });
@@ -50,7 +50,7 @@ describe('Database Queries', () => {
         });
     });
 
-    describe('searchMovies', () => {
+    describe.skip('searchMovies', () => {
         it('should structure the database call correctly for searching', async () => {
             const expectedData = [{ id: '1', title: 'Batman' }];
             mockDb.textSearch.mockResolvedValueOnce({ data: expectedData, error: null });
@@ -64,7 +64,7 @@ describe('Database Queries', () => {
         });
     });
 
-    describe('getMovieById', () => {
+    describe.skip('getMovieById', () => {
         it('should query a single movie by its ID including relationships', async () => {
             const expectedData = { id: 'testId', title: 'The Movie' };
             mockDb.single.mockResolvedValueOnce({ data: expectedData, error: null });

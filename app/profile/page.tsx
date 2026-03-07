@@ -62,9 +62,9 @@ export default function ProfilePage() {
             ccExpiration: existingExpiration
           });
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Profile fetch error:", err);
-        setError(`Failed to load profile details: ${err.message || JSON.stringify(err)}`);
+        setError(`Failed to load profile details: ${(err instanceof Error ? err.message : (typeof err === "object" && err !== null && "message" in err ? String((err as Record<string, unknown>).message) : String(err))) || JSON.stringify(err)}`);
       } finally {
         setLoading(false);
       }
@@ -143,8 +143,8 @@ export default function ProfilePage() {
       });
 
       setMessage('Profile updated successfully!');
-    } catch (err: any) {
-      setError(err.message || 'Failed to update profile');
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : (typeof err === "object" && err !== null && "message" in err ? String((err as Record<string, unknown>).message) : String(err))) || 'Failed to update profile');
     } finally {
       setSaving(false);
     }

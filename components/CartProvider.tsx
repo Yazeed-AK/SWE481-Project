@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 
 export interface CartItem {
@@ -24,17 +24,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   // Dynamic key to tie carts to specific users so they persist securely
-  const getStorageKey = () => user ? `imdb_cart_${user.id}` : 'imdb_cart_guest';
+  const getStorageKey = useCallback(() => user ? `imdb_cart_${user.id}` : 'imdb_cart_guest', [user]);
 
   // Load initial cart from local storage when user state evaluates
   useEffect(() => {
     const savedCart = localStorage.getItem(getStorageKey());
     if (savedCart) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
       setCart(JSON.parse(savedCart));
     } else {
       setCart([]);
     }
-  }, [user]);
+  }, [getStorageKey]);
 
   const addToCart = (item: CartItem) => {
     setCart((prev) => {
@@ -55,7 +56,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const clearCart = () => {
-    setCart([]);
+      setCart([]);
     localStorage.removeItem(getStorageKey());
   };
 

@@ -43,8 +43,8 @@ export default function RegisterPage() {
 
       router.push('/login');
       
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : (typeof err === "object" && err !== null && "message" in err ? String((err as Record<string, unknown>).message) : String(err))));
     } finally {
       setLoading(false);
     }

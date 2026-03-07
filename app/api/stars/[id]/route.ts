@@ -23,7 +23,7 @@ export async function GET(
       if (error.code === 'PGRST116') {
         return NextResponse.json({ error: 'Star not found' }, { status: 404 });
       }
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) }, { status: 500 });
     }
 
     if (!data) {
@@ -33,12 +33,12 @@ export async function GET(
     const { stars_in_movies, ...rest } = data;
     const formattedData = {
       ...rest,
-      movies: stars_in_movies?.map((sim: any) => sim.movies) || [],
+      movies: stars_in_movies?.map((sim: Record<string, unknown>) => sim.movies) || [],
     };
 
     return NextResponse.json({ data: formattedData });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) || 'Internal Server Error' }, { status: 500 });
   }
 }

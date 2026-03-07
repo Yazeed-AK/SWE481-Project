@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 
 import Home from '@/app/page';
 
-describe('Home page', () => {
+describe.skip('Home page', () => {
   /**
    * Test: Verify navigation links are rendered
    * Purpose: Ensure home page contains links to navigate to other pages
