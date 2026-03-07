@@ -1,21 +1,33 @@
 import { NextResponse } from 'next/server';
-import { queries } from '@/lib/queries';
+import { supabase } from '@/lib/supabase';
 
+// Search by title (partial matching using 'q' parameter)
 export async function GET(request: Request) {
+  try {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q')?.trim();
-
-    if (!query) {
-        return NextResponse.json(
-            { error: 'Missing required query parameter: q' },
-            { status: 400 }
-        );
+    const q = searchParams.get('q');
+    
+    if (!q) {
+      return NextResponse.json({ data: [] }, { status: 200 });
     }
 
-    try {
-        const movies = await queries.searchMovies(query);
-        return NextResponse.json(movies);
-    } catch {
-        return NextResponse.json({ error: 'Failed to search movies' }, { status: 500 });
+    // Default limit
+    const limit = parseInt(searchParams.get('limit') || '10', 10);
+
+    const { data, error } = await supabase
+      .from('movies')
+      .select('id, title, year')
+      .ilike('title', `%${q}%`)
+      .order('year', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    return NextResponse.json({ data });
+
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+  }
 }

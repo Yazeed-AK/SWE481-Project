@@ -1,41 +1,82 @@
-
 import { NextResponse } from 'next/server';
-import { queries } from '@/lib/queries';
+import { supabase } from '@/lib/supabase';
 
-/**
- * GET /api/movies
- * Retrieves a list of movies, optionally filtered by a search query.
- * @param request - The incoming HTTP request.
- * @returns A JSON response containing the list of movies or an error message.
- */
 export async function GET(request: Request) {
+  try {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('search')?.trim() ?? '';
-    const page = parsePositiveInt(searchParams.get('page'), 1);
-    const limit = parsePositiveInt(searchParams.get('limit'), 10);
+    
+    // Pagination parameters
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '20', 10);
+    const offset = (page - 1) * limit;
+    
+    // Filtering parameters
+    const title = searchParams.get('title');
+    const year = searchParams.get('year');
+    const director = searchParams.get('director');
+    const genre = searchParams.get('genre');
+    
+    // Sorting (default to rating descending)
+    const sortBy = searchParams.get('sort') || 'rating'; 
 
-    try {
-        let movies;
-        if (query) {
-            movies = await queries.searchMovies(query);
-        } else {
-            movies = await queries.getMovies(page, limit);
-        }
-        return NextResponse.json(movies);
-    } catch {
-        return NextResponse.json({ error: 'Failed to fetch movies' }, { status: 500 });
+    let query = supabase
+      .from('movies')
+      .select(`
+        id, 
+        title, 
+        year, 
+        director, 
+        ratings(rating, numVotes),
+        stars_in_movies(stars(name)),
+        genres_in_movies!inner(genres!inner(name))
+      `, { count: 'exact' });
+
+    // Apply Filters
+    if (title) query = query.ilike('title', `%${title}%`);
+    if (year) query = query.eq('year', parseInt(year));
+    if (director) query = query.ilike('director', `%${director}%`);
+    if (genre) query = query.ilike('genres_in_movies.genres.name', `%${genre}%`);
+
+    // Apply Sorting
+    if (sortBy === 'title') {
+      query = query.order('title', { ascending: true });
+    } else if (sortBy === 'year') {
+      query = query.order('year', { ascending: false });
+    } else {
+      // Sorting by rating requires ordering on the joined ratings table natively or via database views for true efficiency.
+      // Below is a simplified fallback for joining logic ordering. 
+      query = query.order('rating', { foreignTable: 'ratings', ascending: false });
     }
-}
 
-function parsePositiveInt(value: string | null, fallback: number): number {
-    if (!value) {
-        return fallback;
+    // Apply Pagination
+    query = query.range(offset, offset + limit - 1);
+
+    const { data, error, count } = await query;
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const parsed = Number.parseInt(value, 10);
-    if (Number.isNaN(parsed) || parsed < 1) {
-        return fallback;
-    }
+    // Format Data for frontend consumption
+    const formattedData = data?.map(movie => ({
+      ...movie,
+      rating: (movie.ratings as any)?.rating || null,
+      numVotes: (movie.ratings as any)?.numVotes || 0,
+      stars: movie.stars_in_movies?.map((sim: any) => sim.stars?.name) || [],
+      genres: movie.genres_in_movies?.map((gim: any) => gim.genres?.name) || [],
+    }));
 
-    return parsed;
+    return NextResponse.json({
+      data: formattedData,
+      meta: {
+        page,
+        limit,
+        total: count,
+        totalPages: count ? Math.ceil(count / limit) : 0
+      }
+    });
+
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+  }
 }
