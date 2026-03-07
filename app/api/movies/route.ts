@@ -62,8 +62,8 @@ export async function GET(request: Request) {
       ...movie,
       rating: (movie.ratings as unknown as { rating: number; numVotes: number })?.rating || null,
       numVotes: (movie.ratings as unknown as { rating: number; numVotes: number })?.numVotes || 0,
-      stars: movie.stars_in_movies?.map((sim: any) => Array.isArray(sim.stars) ? sim.stars[0]?.name : sim.stars?.name) || [],
-      genres: movie.genres_in_movies?.map((gim: any) => Array.isArray(gim.genres) ? gim.genres[0]?.name : gim.genres?.name) || [],
+      stars: movie.stars_in_movies?.map((sim: { stars?: { name?: string } | Array<{ name?: string }> }) => Array.isArray(sim.stars) ? sim.stars[0]?.name : (sim.stars as { name?: string })?.name) || [],
+      genres: movie.genres_in_movies?.map((gim: { genres?: { name?: string } | Array<{ name?: string }> }) => Array.isArray(gim.genres) ? gim.genres[0]?.name : (gim.genres as { name?: string })?.name) || [],
     }));
 
     return NextResponse.json({
