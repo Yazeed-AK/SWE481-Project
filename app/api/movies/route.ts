@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         ratings(rating, numVotes),
         stars_in_movies(stars(name)),
         genres_in_movies!inner(genres!inner(name))
-      `, { count: 'exact' });
+      `, { count: 'estimated' });
 
     // Apply Filters
     if (title) query = query.ilike('title', `%${title}%`);
@@ -43,9 +43,7 @@ export async function GET(request: Request) {
     } else if (sortBy === 'year') {
       query = query.order('year', { ascending: false });
     } else {
-      // Sorting by rating requires ordering on the joined ratings table natively or via database views for true efficiency.
-      // Below is a simplified fallback for joining logic ordering. 
-      query = query.order('rating', { foreignTable: 'ratings', ascending: false });
+      query = query.order('year', { ascending: false });
     }
 
     // Apply Pagination
