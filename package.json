@@ -14,7 +14,8 @@
     "ingest:imdb": "ts-node scripts/ingest/import_imdb.ts"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.94.0",
+    "@supabase/supabase-js": "^2.98.0",
+    "bootstrap": "^5.3.8",
     "dotenv": "^17.2.3",
     "next": "16.1.6",
     "react": "^19.2.3",

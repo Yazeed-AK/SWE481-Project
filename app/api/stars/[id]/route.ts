@@ -9,35 +9,31 @@ export async function GET(
     const { id } = await params;
 
     const { data, error } = await supabase
-      .from('movies')
+      .from('stars')
       .select(`
         id, 
-        title, 
-        year, 
-        director, 
-        ratings(rating, numVotes),
-        stars_in_movies(stars(id, name, birthYear)),
-        genres_in_movies!inner(genres!inner(id, name))
+        name, 
+        birthYear,
+        stars_in_movies(movies(id, title, year, director))
       `)
       .eq('id', id)
       .single();
 
     if (error) {
       if (error.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Movie not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Star not found' }, { status: 404 });
       }
       return NextResponse.json({ error: (error instanceof Error ? error.message : (typeof error === "object" && error !== null && "message" in error ? String((error as Record<string, unknown>).message) : String(error))) }, { status: 500 });
     }
 
     if (!data) {
-        return NextResponse.json({ error: 'Movie not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Star not found' }, { status: 404 });
     }
 
+    const { stars_in_movies, ...rest } = data;
     const formattedData = {
-      ...data,
-      rating: (data.ratings as unknown as { rating: number; numVotes: number }) || { rating: null, numVotes: 0 },
-      stars: data.stars_in_movies?.map((sim: { stars?: unknown }) => sim.stars) || [],
-      genres: data.genres_in_movies?.map((gim: { genres?: unknown }) => gim.genres) || [],
+      ...rest,
+      movies: stars_in_movies?.map((sim: Record<string, unknown>) => sim.movies) || [],
     };
 
     return NextResponse.json({ data: formattedData });

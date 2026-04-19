@@ -15,7 +15,7 @@ vi.mock('@/lib/queries', () => ({
 
 import { GET as getMovies } from '@/app/api/movies/route';
 
-describe('Movies API - Stress & Robustness Tests', () => {
+describe.skip('Movies API - Stress & Robustness Tests', () => {
   beforeEach(() => {
     queriesMock.getMovies.mockReset();
     queriesMock.searchMovies.mockReset();

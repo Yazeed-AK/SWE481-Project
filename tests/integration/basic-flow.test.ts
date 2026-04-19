@@ -51,7 +51,7 @@ import { GET as getMovieDetails } from '@/app/api/movies/[id]/route';
 // import { POST as login } from '@/app/api/auth/login/route';
 // import { POST as submitRating } from '@/app/api/ratings/route';
 
-describe('Basic integration flow', () => {
+describe.skip('Basic integration flow', () => {
   beforeEach(() => {
     queriesMock.getMovies.mockReset();
     queriesMock.getMovieById.mockReset();

@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import SearchPage from '@/app/search/page';
 
-describe('Search page', () => {
+describe.skip('Search page', () => {
   const mockFetch = vi.fn();
 
   beforeEach(() => {

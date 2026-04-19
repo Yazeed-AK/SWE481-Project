@@ -9,13 +9,26 @@ Spring 2026
 ## Project Overview
 
 This project is a full-stack movie web application built using official IMDb datasets.  
-Users can browse, search, and view detailed information about movies, including ratings and genres.
+Users can browse, search, and view detailed information about movies, including ratings and genres. The system also includes user capabilities such as managing a shopping cart and maintaining a personalized watchlist. 
+
+*(Note: The purchase and checkout feature is simply a mock stub for demonstration purposes; no actual transactions or purchases occur.)*
 
 The system is designed to be:
 - Scalable
 - Secure
 - Performant
 - Fully deployed using free-tier services
+
+---
+
+## Functional Requirements
+
+The system supports the following core functionalities:
+- **User Authentication:** Secure registration and login (via Supabase Auth) with protected routes.
+- **Movie Browsing & Searching:** Browse a paginated list of movies and search for specific titles.
+- **Movie Details View:** Access in-depth information about individual movies, including ratings, genres, directors, and stars.
+- **Watchlist Management:** Users can add and remove movies from a personalized list of titles they want to watch.
+- **Shopping Cart & Checkout:** Users can add movies to a cart, view their selections, and simulate a checkout process. *(Note: Checkout is a stub; you cannot really purchase anything).*
 
 ---
 
