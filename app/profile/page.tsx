@@ -194,6 +194,7 @@ export default function ProfilePage() {
                       onChange={handleChange}
                       className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" 
                       required 
+                      maxLength={50}
                     />
                   </div>
                   <div className="col-md-6">
@@ -205,6 +206,7 @@ export default function ProfilePage() {
                       onChange={handleChange}
                       className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" 
                       required 
+                      maxLength={50}
                     />
                   </div>
                   <div className="col-12">
@@ -216,6 +218,7 @@ export default function ProfilePage() {
                       onChange={handleChange}
                       className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" 
                       required 
+                      maxLength={200}
                     />
                   </div>
                   <div className="col-md-7">
@@ -227,7 +230,10 @@ export default function ProfilePage() {
                       onChange={handleChange}
                       className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" 
                       required
-                      placeholder="e.g. 1234567890" 
+                      pattern="^\d{13,19}$"
+                      title="Credit card must be between 13 and 19 digits"
+                      maxLength={19}
+                      placeholder="e.g. 1234567890123" 
                     />
                   </div>
                   <div className="col-md-5">

@@ -64,31 +64,31 @@ export default function RegisterPage() {
           <div className="row g-3">
             <div className="col-md-6">
               <label className="form-label text-light fw-semibold">First Name</label>
-              <input type="text" name="firstName" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+              <input type="text" name="firstName" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} />
             </div>
             <div className="col-md-6">
               <label className="form-label text-light fw-semibold">Last Name</label>
-              <input type="text" name="lastName" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+              <input type="text" name="lastName" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} />
             </div>
             
             <div className="col-12">
               <label className="form-label text-light fw-semibold">Email address</label>
-              <input type="email" name="email" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+              <input type="email" name="email" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} />
             </div>
             
             <div className="col-12">
               <label className="form-label text-light fw-semibold">Password</label>
-              <input type="password" name="password" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+              <input type="password" name="password" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} minLength={8} maxLength={20} title="Password must be between 8 and 20 characters" />
             </div>
 
             <div className="col-12">
               <label className="form-label text-light fw-semibold">Billing Address</label>
-              <input type="text" name="address" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+              <input type="text" name="address" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={200} />
             </div>
 
             <div className="col-md-7 mb-3">
               <label className="form-label text-light fw-semibold">Credit Card ID / Number</label>
-              <input type="text" name="ccId" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+              <input type="text" name="ccId" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} pattern="^\d{13,19}$" title="Credit card must be between 13 and 19 digits" maxLength={19} />
             </div>
 
             <div className="col-md-5 mb-3">

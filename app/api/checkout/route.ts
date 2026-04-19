@@ -25,6 +25,10 @@ export async function POST(request: Request) {
     // Extract and sanitize
     const cleanCcId = ccId?.trim();
 
+    if (!/^\d{13,19}$/.test(cleanCcId)) {
+      return NextResponse.json({ error: 'Invalid credit card format. Must be 13 to 19 digits.' }, { status: 400 });
+    }
+
     // 1. Validate Credit Card
     const { data: ccData, error: ccError } = await supabase
       .from('creditcards')

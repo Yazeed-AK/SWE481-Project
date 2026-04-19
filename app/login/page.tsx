@@ -55,6 +55,7 @@ export default function LoginPage() {
               type="email" 
               className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" 
               required 
+              maxLength={50}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -65,6 +66,9 @@ export default function LoginPage() {
               type="password" 
               className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" 
               required 
+              minLength={8}
+              maxLength={20}
+              title="Password must be between 8 and 20 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

@@ -117,15 +117,15 @@ export default function CheckoutPage() {
               <div className="row g-3">
                 <div className="col-md-6">
                   <label className="form-label text-light fw-semibold">First Name (on card)</label>
-                  <input type="text" name="firstName" value={formData.firstName} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+                  <input type="text" name="firstName" value={formData.firstName} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} />
                 </div>
                 <div className="col-md-6">
                   <label className="form-label text-light fw-semibold">Last Name (on card)</label>
-                  <input type="text" name="lastName" value={formData.lastName} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+                  <input type="text" name="lastName" value={formData.lastName} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} />
                 </div>
                 <div className="col-12">
                   <label className="form-label text-light fw-semibold">Credit Card Number</label>
-                  <input type="text" name="ccId" value={formData.ccId} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+                  <input type="text" name="ccId" value={formData.ccId} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} pattern="^\d{13,19}$" title="Credit card must be between 13 and 19 digits" maxLength={19} />
                 </div>
               </div>
 
