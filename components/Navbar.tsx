@@ -32,11 +32,18 @@ export default function Navbar() {
               </Link>
             </li>
             {user && (
-              <li className="nav-item ms-2">
-                <Link className="nav-link fw-semibold text-light" href="/watchlist">
-                  Watchlist
-                </Link>
-              </li>
+              <>
+                <li className="nav-item ms-2">
+                  <Link className="nav-link fw-semibold text-light" href="/watchlist">
+                    Watchlist
+                  </Link>
+                </li>
+                <li className="nav-item ms-2">
+                  <Link className="nav-link fw-semibold text-light" href="/library">
+                    Library
+                  </Link>
+                </li>
+              </>
             )}
           </ul>
           <div className="d-flex align-items-center gap-3">

@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     if (customerError || !customerData) {
       return NextResponse.json({ error: 'Customer profile not found in database. Please update your Profile first.' }, { status: 400 });
     }
-    
+
     const realCustomerId = customerData.id;
 
     // Extract and sanitize
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     const today = new Date();
     const expDate = new Date(ccData.expiration);
     if (expDate < today) {
-        return NextResponse.json({ error: 'Credit card is expired' }, { status: 400 });
+      return NextResponse.json({ error: 'Credit card is expired' }, { status: 400 });
     }
 
     // 2. Process Sales
@@ -58,12 +58,12 @@ export async function POST(request: Request) {
       .select();
 
     if (salesError) {
-       return NextResponse.json({ error: salesError.message }, { status: 500 });
+      return NextResponse.json({ error: salesError.message }, { status: 500 });
     }
 
-    return NextResponse.json({ 
-        message: 'Transaction successful', 
-        sales: salesData 
+    return NextResponse.json({
+      message: 'Transaction successful',
+      sales: salesData
     });
 
   } catch (error: unknown) {
