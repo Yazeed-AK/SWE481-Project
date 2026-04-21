@@ -78,7 +78,7 @@ export default function RegisterPage() {
             
             <div className="col-12">
               <label className="form-label text-light fw-semibold">Password</label>
-              <input type="password" name="password" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} minLength={8} maxLength={20} title="Password must be between 8 and 20 characters" />
+              <input type="password" name="password" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
             </div>
 
             <div className="col-12">

@@ -23,12 +23,6 @@ export async function POST(request: Request) {
       );
     }
 
-    if (password.length < 8 || password.length > 20) {
-      return NextResponse.json(
-        { error: 'Password must be between 8 and 20 characters' },
-        { status: 400 }
-      );
-    }
 
     if (!/^\d{13,19}$/.test(ccId)) {
       return NextResponse.json(

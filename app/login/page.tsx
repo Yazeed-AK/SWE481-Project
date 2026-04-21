@@ -62,13 +62,11 @@ export default function LoginPage() {
           </div>
           <div className="mb-4">
             <label className="form-label text-light fw-semibold">Password</label>
-            <input 
+              <input 
               type="password" 
               className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" 
               required 
-              minLength={8}
-              maxLength={20}
-              title="Password must be between 8 and 20 characters"
+
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
