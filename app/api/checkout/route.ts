@@ -3,7 +3,15 @@ import { supabase } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
-    const { email, firstName, lastName, ccId, ccExpiration, cart } = await request.json();
+    const body = await request.json();
+
+    // Sanitize all inputs — trim whitespace and normalize email to lowercase
+    const email = body.email?.trim().toLowerCase();
+    const firstName = body.firstName?.trim();
+    const lastName = body.lastName?.trim();
+    const ccId = body.ccId;
+    const ccExpiration = body.ccExpiration;
+    const cart = body.cart;
 
     if (!email || !firstName || !lastName || !ccId || !ccExpiration || !cart || cart.length === 0) {
       return NextResponse.json({ error: 'Missing required checkout information or empty cart' }, { status: 400 });
@@ -16,8 +24,14 @@ export async function POST(request: Request) {
       .eq('email', email)
       .maybeSingle();
 
-    if (customerError || !customerData) {
-      return NextResponse.json({ error: 'Customer profile not found in database. Please update your Profile first.' }, { status: 400 });
+    if (customerError) {
+      console.error('[CHECKOUT] DB error looking up customer:', customerError);
+      return NextResponse.json({ error: 'Database error while looking up customer. Please try again.' }, { status: 500 });
+    }
+
+    if (!customerData) {
+      console.error('[CHECKOUT] No customer found for email:', email);
+      return NextResponse.json({ error: 'Customer profile not found. Please make sure you are registered and logged in.' }, { status: 404 });
     }
 
     const realCustomerId = customerData.id;

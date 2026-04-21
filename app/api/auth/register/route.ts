@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const payload = await request.json();
     
     // Sanitize and trim inputs to avoid trailing whitespace validation mismatch
-    const email = payload.email?.trim();
+    const email = payload.email?.trim().toLowerCase();
     const password = payload.password;
     const firstName = payload.firstName?.trim();
     const lastName = payload.lastName?.trim();

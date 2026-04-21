@@ -60,8 +60,8 @@ CREATE TABLE "customers" (
     "lastName" VARCHAR(50) NOT NULL,
     "ccId" VARCHAR(20) REFERENCES "creditcards"("id") ON DELETE SET NULL,
     "address" VARCHAR(200) NOT NULL,
-    "email" VARCHAR(50) NOT NULL,
-    "password" VARCHAR(20) NOT NULL
+    "email" VARCHAR(254) NOT NULL UNIQUE,
+    "password" VARCHAR(255) NOT NULL
 );
 
 -- 8. Sales
