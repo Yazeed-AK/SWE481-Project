@@ -19,6 +19,7 @@ export default function CheckoutPage() {
     firstName: '',
     lastName: '',
     ccId: '',
+    ccExpiration: '',
     email: ''
   });
 
@@ -33,7 +34,6 @@ export default function CheckoutPage() {
          ...prev,
          firstName: user.user_metadata.firstName || '',
          lastName: user.user_metadata.lastName || '',
-         ccId: user.user_metadata.ccId || '',
          email: user.email || ''
        }));
     }
@@ -117,15 +117,19 @@ export default function CheckoutPage() {
               <div className="row g-3">
                 <div className="col-md-6">
                   <label className="form-label text-light fw-semibold">First Name (on card)</label>
-                  <input type="text" name="firstName" value={formData.firstName} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} />
+                  <input type="text" name="firstName" value={formData.firstName} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} readOnly />
                 </div>
                 <div className="col-md-6">
                   <label className="form-label text-light fw-semibold">Last Name (on card)</label>
-                  <input type="text" name="lastName" value={formData.lastName} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} />
+                  <input type="text" name="lastName" value={formData.lastName} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} readOnly />
                 </div>
-                <div className="col-12">
+                <div className="col-md-7">
                   <label className="form-label text-light fw-semibold">Credit Card Number</label>
                   <input type="text" name="ccId" value={formData.ccId} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} pattern="^\d{13,19}$" title="Credit card must be between 13 and 19 digits" maxLength={19} />
+                </div>
+                <div className="col-md-5">
+                  <label className="form-label text-light fw-semibold">Expiration Date</label>
+                  <input type="date" name="ccExpiration" value={formData.ccExpiration} className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} min={new Date().toISOString().split('T')[0]} />
                 </div>
               </div>
 

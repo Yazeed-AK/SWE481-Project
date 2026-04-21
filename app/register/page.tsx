@@ -10,9 +10,7 @@ export default function RegisterPage() {
     password: '',
     firstName: '',
     lastName: '',
-    address: '',
-    ccId: '',
-    ccExpiration: ''
+    address: ''
   });
   
   const [error, setError] = useState('');
@@ -86,15 +84,6 @@ export default function RegisterPage() {
               <input type="text" name="address" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={200} />
             </div>
 
-            <div className="col-md-7 mb-3">
-              <label className="form-label text-light fw-semibold">Credit Card ID / Number</label>
-              <input type="text" name="ccId" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} pattern="^\d{13,19}$" title="Credit card must be between 13 and 19 digits" maxLength={19} />
-            </div>
-
-            <div className="col-md-5 mb-3">
-              <label className="form-label text-light fw-semibold">Expiration Date</label>
-              <input type="date" name="ccExpiration" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
-            </div>
           </div>
           
           <button type="submit" className="btn btn-warning w-100 fw-bold py-2 my-3" disabled={loading}>

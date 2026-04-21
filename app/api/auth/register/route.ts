@@ -11,22 +11,12 @@ export async function POST(request: Request) {
     const firstName = payload.firstName?.trim();
     const lastName = payload.lastName?.trim();
     const address = payload.address?.trim();
-    const ccId = payload.ccId?.trim();
-    const ccExpiration = payload.ccExpiration?.trim();
 
-    console.log('[REGISTRATION ATTEMPT]', { email, firstName, lastName, ccId, ccExpiration });
+    console.log('[REGISTRATION ATTEMPT]', { email, firstName, lastName });
 
-    if (!email || !password || !firstName || !lastName || !address || !ccId || !ccExpiration) {
+    if (!email || !password || !firstName || !lastName || !address) {
       return NextResponse.json(
         { error: 'All fields are required' },
-        { status: 400 }
-      );
-    }
-
-
-    if (!/^\d{13,19}$/.test(ccId)) {
-      return NextResponse.json(
-        { error: 'Invalid credit card format. Must be 13 to 19 digits.' },
         { status: 400 }
       );
     }
@@ -39,9 +29,7 @@ export async function POST(request: Request) {
         data: {
           firstName,
           lastName,
-          address,
-          ccId,
-          ccExpiration
+          address
         }
       }
     });
@@ -54,27 +42,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Auth failed to return user.' }, { status: 500 });
     }
 
-    // 2. Insert explicit credit card
-    const { error: ccError } = await supabase
-      .from('creditcards')
-      .upsert([{ 
-        id: ccId,
-        firstName: firstName,
-        lastName: lastName,
-        expiration: ccExpiration
-      }])
-      .select();
-
-    if (ccError) {
-      // Rollback auth
-      await supabase.auth.admin.deleteUser(authData.user.id);
-      return NextResponse.json(
-        { error: 'Failed to provision Credit Card record' }, 
-        { status: 500 }
-      );
-    }
-
-    // 3. Then, insert their extended profile info into our `customers` table
+    // 2. Then, insert their extended profile info into our `customers` table
     const { data: customerData, error: dbError } = await supabase
       .from('customers')
       .insert([
@@ -85,8 +53,7 @@ export async function POST(request: Request) {
           password, // Usually poor practice to store plain text; demo purpose assumes hashed inside or uses Supabase purely. 
           firstName,
           lastName,
-          address,
-          ccId 
+          address
         }
       ])
       .select();
