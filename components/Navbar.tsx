@@ -9,11 +9,16 @@ export default function Navbar() {
   const { user, signOut } = useAuth();
   const { cart } = useCart();
   const [mounted, setMounted] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-black shadow-sm sticky-top">
@@ -21,10 +26,16 @@ export default function Navbar() {
         <Link className="navbar-brand text-warning bg-dark px-2 rounded-1 fw-bold fs-4" href="/">
           IMDb
         </Link>
-        <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button 
+          className="navbar-toggler border-0 shadow-none" 
+          type="button" 
+          onClick={toggleMenu}
+          aria-expanded={isMenuOpen}
+          aria-label="Toggle navigation"
+        >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
+        <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarNav">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
             <li className="nav-item">
               <Link className="nav-link fw-semibold text-light" href="/movies">

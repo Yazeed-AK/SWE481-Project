@@ -45,12 +45,12 @@ export default function CartPage() {
             <div className="card bg-dark border-secondary shadow-sm">
               <ul className="list-group list-group-flush">
                 {cart.map((item) => (
-                  <li key={item.id} className="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3">
+                  <li key={item.id} className="list-group-item bg-dark border-secondary d-flex flex-column flex-sm-row justify-content-between align-items-sm-center py-3 gap-3">
                     <div>
-                      <h5 className="text-light mb-1 fw-semibold">{item.title}</h5>
+                      <h5 className="text-light mb-0 fw-semibold">{item.title}</h5>
                     </div>
-                    <div className="d-flex align-items-center">
-                      <span className="text-warning fw-bold fs-5 me-4">${item.price}</span>
+                    <div className="d-flex align-items-center justify-content-between justify-content-sm-end w-100">
+                      <span className="text-warning fw-bold fs-5 me-sm-4">${item.price}</span>
                       <button 
                         onClick={() => removeFromCart(item.id)}
                         className="btn btn-sm btn-outline-danger"
