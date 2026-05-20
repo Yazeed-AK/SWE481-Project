@@ -44,7 +44,7 @@ export default function SearchPage() {
     setHasError(false);
 
     try {
-      const res = await fetch(`/api/movies?search=${encodeURIComponent(query)}`);
+      const res = await fetch(`/api/movies/search?q=${encodeURIComponent(query)}`);
       
       if (!res.ok) {
         throw new Error('Failed to fetch search results');

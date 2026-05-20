@@ -3,11 +3,23 @@ import { supabase } from '@/lib/supabase';
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const email = searchParams.get('email');
+    const authHeader = request.headers.get('Authorization');
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized: Missing or invalid token' }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
+    }
+
+    const email = user.email;
 
     if (!email) {
-      return NextResponse.json({ error: 'Missing email parameter' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing email address associated with session' }, { status: 400 });
     }
 
     // Lookup real numeric customer ID

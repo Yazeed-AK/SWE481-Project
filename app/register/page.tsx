@@ -10,9 +10,7 @@ export default function RegisterPage() {
     password: '',
     firstName: '',
     lastName: '',
-    address: '',
-    ccId: '',
-    ccExpiration: ''
+    address: ''
   });
   
   const [error, setError] = useState('');
@@ -64,16 +62,16 @@ export default function RegisterPage() {
           <div className="row g-3">
             <div className="col-md-6">
               <label className="form-label text-light fw-semibold">First Name</label>
-              <input type="text" name="firstName" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+              <input type="text" name="firstName" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} />
             </div>
             <div className="col-md-6">
               <label className="form-label text-light fw-semibold">Last Name</label>
-              <input type="text" name="lastName" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+              <input type="text" name="lastName" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} />
             </div>
             
             <div className="col-12">
               <label className="form-label text-light fw-semibold">Email address</label>
-              <input type="email" name="email" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+              <input type="email" name="email" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={50} />
             </div>
             
             <div className="col-12">
@@ -83,18 +81,9 @@ export default function RegisterPage() {
 
             <div className="col-12">
               <label className="form-label text-light fw-semibold">Billing Address</label>
-              <input type="text" name="address" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
+              <input type="text" name="address" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} maxLength={200} />
             </div>
 
-            <div className="col-md-7 mb-3">
-              <label className="form-label text-light fw-semibold">Credit Card ID / Number</label>
-              <input type="text" name="ccId" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
-            </div>
-
-            <div className="col-md-5 mb-3">
-              <label className="form-label text-light fw-semibold">Expiration Date</label>
-              <input type="date" name="ccExpiration" className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" required onChange={handleChange} />
-            </div>
           </div>
           
           <button type="submit" className="btn btn-warning w-100 fw-bold py-2 my-3" disabled={loading}>

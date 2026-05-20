@@ -130,8 +130,8 @@ export default function SingleMoviePage() {
       <div className="row">
         {/* Left Col - Info */}
         <div className="col-md-8">
-          <div className="d-flex align-items-end mb-2 border-bottom border-secondary pb-3">
-            <h1 className="display-4 fw-bold text-white mb-0 me-3">{movie.title}</h1>
+          <div className="d-flex flex-wrap align-items-end mb-2 border-bottom border-secondary pb-3">
+            <h1 className="display-5 fw-bold text-white mb-0 me-3">{movie.title}</h1>
             <span className="fs-4 text-muted pb-1">{movie.year}</span>
           </div>
           

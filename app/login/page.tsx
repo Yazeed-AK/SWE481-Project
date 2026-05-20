@@ -1,17 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { supabase } from '@/lib/supabase';
 
-export default function LoginPage() {
+function LoginContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('next') || '/';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +30,7 @@ export default function LoginPage() {
         throw new Error(authError.message || 'Login failed');
       }
 
-      router.push('/');
+      router.push(redirectTo);
       router.refresh();
       
     } catch (err: unknown) {
@@ -55,13 +57,14 @@ export default function LoginPage() {
               type="email" 
               className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" 
               required 
+              maxLength={50}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="mb-4">
             <label className="form-label text-light fw-semibold">Password</label>
-            <input 
+              <input 
               type="password" 
               className="form-control bg-secondary text-light border-0 focus-ring focus-ring-warning" 
               required 
@@ -87,5 +90,19 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="container py-5 d-flex justify-content-center align-items-center min-vh-100">
+        <div className="spinner-border text-warning" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

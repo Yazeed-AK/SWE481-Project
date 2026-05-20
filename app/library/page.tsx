@@ -14,7 +14,7 @@ interface PurchasedMovie {
 }
 
 export default function LibraryPage() {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [movies, setMovies] = useState<PurchasedMovie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,7 +27,11 @@ export default function LibraryPage() {
 
     const fetchLibrary = async () => {
       try {
-        const response = await fetch(`/api/library?email=${encodeURIComponent(user.email || '')}`);
+        const response = await fetch(`/api/library`, {
+          headers: {
+            'Authorization': `Bearer ${session?.access_token || ''}`
+          }
+        });
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || 'Failed to fetch library');
@@ -41,8 +45,10 @@ export default function LibraryPage() {
       }
     };
 
-    fetchLibrary();
-  }, [user]);
+    if (session) {
+      fetchLibrary();
+    }
+  }, [user, session]);
 
   if (loading) {
     return (

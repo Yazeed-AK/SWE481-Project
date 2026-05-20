@@ -19,12 +19,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const setAuthCookie = (session: Session | null) => {
+    if (typeof window === 'undefined') return;
+    if (session) {
+      document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${session.expires_in || 3600}; SameSite=Lax; Secure`;
+    } else {
+      document.cookie = `sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    }
+  };
+
   useEffect(() => {
     // 1. Check active sessions and sets the user
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
       setUser(session?.user || null);
+      setAuthCookie(session);
       setLoading(false);
     };
 
@@ -35,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (_event, session) => {
         setSession(session);
         setUser(session?.user || null);
+        setAuthCookie(session);
         setLoading(false);
       }
     );

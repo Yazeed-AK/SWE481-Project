@@ -48,10 +48,10 @@ export default function MovieList() {
 
   return (
     <div className="container py-4 bg-dark min-vh-100 text-light">
-      <div className="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 border-bottom border-secondary pb-3">
         <h2 className="text-warning fw-bold mb-0">Browse Movies</h2>
         
-        <div className="w-25">
+        <div className="w-100" style={{ maxWidth: '300px' }}>
           <input 
             type="text" 
             className="form-control bg-dark text-light border-secondary focus-ring focus-ring-warning" 
