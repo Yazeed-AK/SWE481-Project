@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       .select('id, title, year')
       .textSearch('title', formattedQuery, {
         config: 'english',
-        type: 'to_tsquery' as any
+        type: 'to_tsquery' as unknown as 'websearch'
       })
       .order('year', { ascending: false })
       .limit(limit);
@@ -42,7 +42,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ data });
 
-  } catch (error: unknown) {
+  } catch {
     return NextResponse.json({ error: 'Failed to search movies' }, { status: 500 });
   }
 }

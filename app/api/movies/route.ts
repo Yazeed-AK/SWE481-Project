@@ -48,7 +48,7 @@ export async function GET(request: Request) {
       if (formattedQuery) {
         query = query.textSearch('title', formattedQuery, {
           config: 'english',
-          type: 'to_tsquery' as any
+          type: 'to_tsquery' as unknown as 'websearch'
         });
       }
     }
