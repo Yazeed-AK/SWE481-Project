@@ -3,10 +3,28 @@ import { supabase } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
+    const authHeader = request.headers.get('Authorization');
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized: Missing or invalid token' }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     // Sanitize all inputs — trim whitespace and normalize email to lowercase
     const email = body.email?.trim().toLowerCase();
+
+    if (email !== user.email?.trim().toLowerCase()) {
+      return NextResponse.json({ error: 'Forbidden: Email mismatch' }, { status: 403 });
+    }
+
     const firstName = body.firstName?.trim();
     const lastName = body.lastName?.trim();
     const ccId = body.ccId;

@@ -84,6 +84,10 @@ CREATE INDEX idx_movies_title ON "movies" USING GIN (to_tsvector('english', "tit
 CREATE INDEX idx_movies_year ON "movies" ("year");
 CREATE INDEX idx_stars_name ON "stars" USING GIN (to_tsvector('english', "name"));
 CREATE INDEX idx_ratings_votes ON "ratings" ("numVotes" DESC);
+CREATE INDEX idx_stars_in_movies_movie ON "stars_in_movies" ("movieId");
+CREATE INDEX idx_genres_in_movies_movie ON "genres_in_movies" ("movieId");
+CREATE INDEX idx_sales_customer ON "sales" ("customerId");
+CREATE INDEX idx_sales_movie ON "sales" ("movieId");
 
 -- Reload Schema Cache
 NOTIFY pgrst, 'reload schema';

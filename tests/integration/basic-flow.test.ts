@@ -1,25 +1,19 @@
-/**
- * Integration Test: Basic User Flow
- * 
- * Tests the complete user journey:
- * 1. Browse movies list (no auth required)
- * 2. View movie details (no auth required)
- * 3. Search for movies (no auth required)
- * 4. User login to get Bearer token (auth endpoint)
- * 5. Rate a movie (requires Bearer token)
- * 
- * API Specifications Used:
- * - GET /api/movies (public)
- * - GET /api/movies/[id] (public)
- * - POST /api/auth/login (returns Bearer token)
- * - POST /api/ratings (requires Bearer token)
- */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const queriesMock = vi.hoisted(() => ({
-  getMovies: vi.fn(),
-  getMovieById: vi.fn(),
-  searchMovies: vi.fn()
+const mockSupabase = vi.hoisted(() => ({
+  from: vi.fn().mockReturnThis(),
+  select: vi.fn().mockReturnThis(),
+  textSearch: vi.fn().mockReturnThis(),
+  eq: vi.fn().mockReturnThis(),
+  ilike: vi.fn().mockReturnThis(),
+  order: vi.fn().mockReturnThis(),
+  range: vi.fn().mockReturnThis(),
+  single: vi.fn().mockReturnThis(),
+  then: vi.fn(),
+}));
+
+vi.mock('@/lib/supabase', () => ({
+  supabase: mockSupabase
 }));
 
 const authMock = vi.hoisted(() => ({
@@ -29,10 +23,6 @@ const authMock = vi.hoisted(() => ({
 
 const ratingsMock = vi.hoisted(() => ({
   addRating: vi.fn()
-}));
-
-vi.mock('@/lib/queries', () => ({
-  queries: queriesMock
 }));
 
 vi.mock('@/lib/auth', () => ({
@@ -46,31 +36,31 @@ vi.mock('@/lib/ratings', () => ({
 import { GET as getMovies } from '@/app/api/movies/route';
 import { GET as getMovieDetails } from '@/app/api/movies/[id]/route';
 
-// We'll simulate the other endpoints as we don't have them in the context
-// Assuming standard Next.js route handlers
-// import { POST as login } from '@/app/api/auth/login/route';
-// import { POST as submitRating } from '@/app/api/ratings/route';
-
-describe.skip('Basic integration flow', () => {
+describe('Basic integration flow', () => {
   beforeEach(() => {
-    queriesMock.getMovies.mockReset();
-    queriesMock.getMovieById.mockReset();
-    queriesMock.searchMovies.mockReset();
+    vi.clearAllMocks();
     authMock.login.mockReset();
     authMock.verifyToken.mockReset();
     ratingsMock.addRating.mockReset();
   });
 
   it('loads movies then opens details', async () => {
-    // Public API: GET /api/movies (no auth required)
-    queriesMock.getMovies.mockResolvedValue({
-      data: [{ id: 'tt0372784', title: 'Batman Begins' }],
-      error: null
-    });
-    // Public API: GET /api/movies/[id] (no auth required)
-    queriesMock.getMovieById.mockResolvedValue({
-      data: { id: 'tt0372784', title: 'Batman Begins' },
-      error: null
+    // Mock getMovies response
+    mockSupabase.then.mockImplementationOnce((onfulfilled) => {
+      onfulfilled({
+        data: [{
+          id: 'tt0372784',
+          title: 'Batman Begins',
+          year: 2005,
+          director: 'Christopher Nolan',
+          ratings: { rating: 8.2, numVotes: 1000000 },
+          stars_in_movies: [{ stars: { name: 'Christian Bale' } }],
+          genres_in_movies: [{ genres: { name: 'Action' } }]
+        }],
+        error: null,
+        count: 1
+      });
+      return Promise.resolve();
     });
 
     const listResponse = await getMovies(new Request('http://localhost:3000/api/movies'));
@@ -80,6 +70,24 @@ describe.skip('Basic integration flow', () => {
     expect(listBody.data).toHaveLength(1);
 
     const movieId = listBody.data[0].id as string;
+
+    // Mock getMovieDetails response
+    mockSupabase.then.mockImplementationOnce((onfulfilled) => {
+      onfulfilled({
+        data: {
+          id: 'tt0372784',
+          title: 'Batman Begins',
+          year: 2005,
+          director: 'Christopher Nolan',
+          ratings: { rating: 8.2, numVotes: 1000000 },
+          stars_in_movies: [{ stars: { id: 'star1', name: 'Christian Bale', birthYear: 1974 } }],
+          genres_in_movies: [{ genres: { id: 'genre1', name: 'Action' } }]
+        },
+        error: null
+      });
+      return Promise.resolve();
+    });
+
     const detailsResponse = await getMovieDetails(
       new Request(`http://localhost:3000/api/movies/${movieId}`),
       { params: Promise.resolve({ id: movieId }) }
@@ -89,13 +97,25 @@ describe.skip('Basic integration flow', () => {
     expect(detailsResponse.status).toBe(200);
     expect(detailsBody.data.id).toBe(movieId);
 
-    // 3. Search for movies (no auth required)
-    queriesMock.searchMovies.mockResolvedValue({
-      data: [{ id: 'tt0372784', title: 'Batman Begins' }],
-      error: null
+    // Mock search GET request (hits /api/movies?title=Batman)
+    mockSupabase.then.mockImplementationOnce((onfulfilled) => {
+      onfulfilled({
+        data: [{
+          id: 'tt0372784',
+          title: 'Batman Begins',
+          year: 2005,
+          director: 'Christopher Nolan',
+          ratings: { rating: 8.2, numVotes: 1000000 },
+          stars_in_movies: [{ stars: { name: 'Christian Bale' } }],
+          genres_in_movies: [{ genres: { name: 'Action' } }]
+        }],
+        error: null,
+        count: 1
+      });
+      return Promise.resolve();
     });
 
-    const searchResponse = await getMovies(new Request('http://localhost:3000/api/movies?search=Batman'));
+    const searchResponse = await getMovies(new Request('http://localhost:3000/api/movies?title=Batman'));
     const searchBody = await searchResponse.json();
 
     expect(searchResponse.status).toBe(200);
@@ -103,7 +123,6 @@ describe.skip('Basic integration flow', () => {
     expect(searchBody.data[0].title).toBe('Batman Begins');
 
     // 4. User login to get Bearer token (auth endpoint)
-    // Assuming login works and returns a token
     const token = 'mock-jwt-token';
     authMock.login.mockResolvedValue({ user: { id: 1 }, token });
 

@@ -13,7 +13,7 @@ export default function CheckoutPage() {
   const { cart, clearCart } = useCart();
   const [hydrated, setHydrated] = useState(false);
   
-  const { user } = useAuth();
+  const { user, session } = useAuth();
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -57,7 +57,10 @@ export default function CheckoutPage() {
 
       const res = await fetch('/api/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token || ''}`
+        },
         body: JSON.stringify({
           ...formData,
           cart

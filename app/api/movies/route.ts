@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+function formatTsQuery(q: string): string {
+  const sanitized = q.replace(/[^\w\s]/g, '');
+  const words = sanitized.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '';
+  return words.map(word => `${word}:*`).join(' & ');
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -19,6 +26,10 @@ export async function GET(request: Request) {
     // Sorting (default to rating descending)
     const sortBy = searchParams.get('sort') || 'rating';
 
+    const genresSelect = genre 
+      ? 'genres_in_movies!inner(genres!inner(name))' 
+      : 'genres_in_movies(genres(name))';
+
     let query = supabase
       .from('movies')
       .select(`
@@ -28,11 +39,19 @@ export async function GET(request: Request) {
         director, 
         ratings(rating, numVotes),
         stars_in_movies(stars(name)),
-        genres_in_movies!inner(genres!inner(name))
+        ${genresSelect}
       `, { count: 'estimated' });
 
     // Apply Filters
-    if (title) query = query.ilike('title', `%${title}%`);
+    if (title) {
+      const formattedQuery = formatTsQuery(title);
+      if (formattedQuery) {
+        query = query.textSearch('title', formattedQuery, {
+          config: 'english',
+          type: 'to_tsquery'
+        });
+      }
+    }
     if (year) query = query.eq('year', parseInt(year));
     if (director) query = query.ilike('director', `%${director}%`);
     if (genre) query = query.ilike('genres_in_movies.genres.name', `%${genre}%`);
@@ -42,6 +61,9 @@ export async function GET(request: Request) {
       query = query.order('title', { ascending: true });
     } else if (sortBy === 'year') {
       query = query.order('year', { ascending: false });
+    } else if (sortBy === 'rating') {
+      // Sort by rating in the joined ratings table
+      query = query.order('rating', { referencedTable: 'ratings', ascending: false });
     } else {
       query = query.order('year', { ascending: false });
     }

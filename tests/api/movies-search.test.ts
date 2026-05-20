@@ -1,37 +1,35 @@
-/**
- * Test file for Movies Search API
- * Tests the GET /api/movies/search endpoint from API_SPEC.md
- */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const queriesMock = vi.hoisted(() => ({
-  searchMovies: vi.fn()
+const mockSupabase = vi.hoisted(() => ({
+  from: vi.fn().mockReturnThis(),
+  select: vi.fn().mockReturnThis(),
+  textSearch: vi.fn().mockReturnThis(),
+  order: vi.fn().mockReturnThis(),
+  limit: vi.fn(),
 }));
 
-vi.mock('@/lib/queries', () => ({
-  queries: queriesMock
+vi.mock('@/lib/supabase', () => ({
+  supabase: mockSupabase
 }));
 
 import { GET } from '@/app/api/movies/search/route';
 
-describe.skip('GET /api/movies/search', () => {
+describe('GET /api/movies/search', () => {
   beforeEach(() => {
-    queriesMock.searchMovies.mockReset();
+    vi.clearAllMocks();
   });
 
   it('searches movies when q is provided', async () => {
-    const result = {
-      data: [{ id: 'tt0076759', title: 'Star Wars', year: 1977 }],
-      error: null
-    };
-    queriesMock.searchMovies.mockResolvedValue(result);
+    const mockData = [{ id: 'tt0076759', title: 'Star Wars', year: 1977 }];
+    mockSupabase.limit.mockResolvedValueOnce({ data: mockData, error: null });
 
     const response = await GET(new Request('http://localhost:3000/api/movies/search?q=Star%20Wars'));
     const body = await response.json();
 
     expect(response.status).toBe(200);
-    expect(queriesMock.searchMovies).toHaveBeenCalledWith('Star Wars');
-    expect(body).toEqual(result);
+    expect(mockSupabase.from).toHaveBeenCalledWith('movies');
+    expect(mockSupabase.textSearch).toHaveBeenCalledWith('title', 'Star:* & Wars:*', { config: 'english', type: 'to_tsquery' });
+    expect(body).toEqual({ data: mockData });
   });
 
   it('returns 400 when q is missing', async () => {
@@ -40,18 +38,18 @@ describe.skip('GET /api/movies/search', () => {
 
     expect(response.status).toBe(400);
     expect(body).toEqual({ error: 'Missing required query parameter: q' });
-    expect(queriesMock.searchMovies).not.toHaveBeenCalled();
   });
 
   it('returns 400 when q is blank', async () => {
     const response = await GET(new Request('http://localhost:3000/api/movies/search?q=   '));
+    const body = await response.json();
 
     expect(response.status).toBe(400);
-    expect(queriesMock.searchMovies).not.toHaveBeenCalled();
+    expect(body).toEqual({ error: 'Missing required query parameter: q' });
   });
 
   it('handles search query failures with 500', async () => {
-    queriesMock.searchMovies.mockRejectedValue(new Error('db error'));
+    mockSupabase.limit.mockRejectedValueOnce(new Error('db error'));
 
     const response = await GET(new Request('http://localhost:3000/api/movies/search?q=Batman'));
     const body = await response.json();
