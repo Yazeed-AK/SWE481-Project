@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       .select('id, title, year')
       .textSearch('title', formattedQuery, {
         config: 'english',
-        type: 'to_tsquery'
+        type: 'to_tsquery' as any
       })
       .order('year', { ascending: false })
       .limit(limit);
